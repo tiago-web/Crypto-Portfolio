@@ -72,8 +72,7 @@ export class TokensService {
     const foundToken = await this.findById(id);
 
     if (!foundToken) {
-      // throw new NotFoundException('Token not found.');
-      throw new Error('Token not found.');
+      throw new NotFoundException('Token not found.');
     }
 
     await this.tokenModel.deleteOne({ id: id }).exec();
