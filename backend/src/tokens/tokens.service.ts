@@ -1,8 +1,8 @@
 import { Model } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateTokenDto } from './dto/create-token.dto';
-import { UpdateTokenDto } from './dto/update-token.dto';
+import { UpdateTokenQuantityDto } from './dto/update-token-quantity.dto';
 import { Token, TokenDocument } from './entities/token.entity';
 
 @Injectable()
@@ -11,39 +11,54 @@ export class TokensService {
     @InjectModel(Token.name) private tokenModel: Model<TokenDocument>,
   ) {}
 
-  create(createTokenDto: CreateTokenDto) {
+  async create(createTokenDto: CreateTokenDto) {
     const token = new this.tokenModel(createTokenDto);
 
-    return token.save();
+    return await token.save();
   }
 
-  findAll() {
-    return this.tokenModel.find();
+  async findAll() {
+    return await this.tokenModel.find();
   }
 
-  findOne(id: string) {
-    return this.tokenModel.findOne({
+  async findById(id: string) {
+    return await this.tokenModel.findOne({
       id: id,
     });
   }
 
-  update(id: string, updateTokenDto: UpdateTokenDto) {
-    console.log(id, updateTokenDto);
+  async updateQuantityById(
+    id: string,
+    updateTokenQuantityDto: UpdateTokenQuantityDto,
+  ) {
+    const foundToken = await this.findById(id);
 
-    return this.tokenModel.findOneAndUpdate(
+    if (!foundToken) {
+      throw new NotFoundException('Token not found.');
+    }
+
+    const updatedToken = await this.tokenModel.findOneAndUpdate(
       {
         id: id,
       },
       {
-        $set: updateTokenDto,
+        $set: { quantity: updateTokenQuantityDto.new_quantity },
       },
       {
         new: true,
       },
     );
+
+    return updatedToken;
   }
 
-  remove(id: string) {
-    return this.tokenModel.deleteOne({ id: id }).exec();
+  async deleteById(id: string) {
+    const foundToken = await this.findById(id);
+
+    if (!foundToken) {
+      throw new NotFoundException('Token not found.');
+    }
+
+    await this.tokenModel.deleteOne({ id: id }).exec();
   }
 }
