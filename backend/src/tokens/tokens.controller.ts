@@ -16,8 +16,8 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IndexTokenSwagger } from './swagger/index-token-swagger';
 import { CreateTokenSwagger } from './swagger/create-token-swagger';
 import { UpdateTokenSwagger } from './swagger/update-token-swagger';
-import { BadRequestSwagger } from 'src/helpers/swagger/bad-request.swagger';
-import { NotFoundSwagger } from 'src/helpers/swagger/not-found.swagger';
+import { BadRequestSwagger } from '../helpers/swagger/bad-request.swagger';
+import { NotFoundSwagger } from '../helpers/swagger/not-found.swagger';
 
 @Controller('api/v1/tokens')
 @ApiTags('tokens')

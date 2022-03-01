@@ -21,6 +21,13 @@ export class Token {
   @Prop()
   @ApiProperty()
   quantity: number;
+
+  constructor(token?: Partial<Token>) {
+    this.id = token?.id;
+    this.name = token?.name;
+    this.symbol = token?.symbol;
+    this.quantity = token?.quantity;
+  }
 }
 
 export const TokenSchema = SchemaFactory.createForClass(Token);
