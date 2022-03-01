@@ -1,5 +1,9 @@
 import { Model } from 'mongoose';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateTokenDto } from './dto/create-token.dto';
 import { UpdateTokenQuantityDto } from './dto/update-token-quantity.dto';
@@ -12,19 +16,31 @@ export class TokensService {
   ) {}
 
   async create(createTokenDto: CreateTokenDto) {
+    const foundToken = await this.findById(createTokenDto.id);
+
+    if (foundToken) {
+      throw new ConflictException('Token already exists.');
+    }
+
     const token = new this.tokenModel(createTokenDto);
 
-    return await token.save();
+    await token.save();
+
+    return token;
   }
 
   async findAll() {
-    return await this.tokenModel.find();
+    const tokenList = await this.tokenModel.find();
+
+    return tokenList;
   }
 
   async findById(id: string) {
-    return await this.tokenModel.findOne({
+    const foundToken = await this.tokenModel.findOne({
       id: id,
     });
+
+    return foundToken;
   }
 
   async updateQuantityById(
@@ -56,7 +72,8 @@ export class TokensService {
     const foundToken = await this.findById(id);
 
     if (!foundToken) {
-      throw new NotFoundException('Token not found.');
+      // throw new NotFoundException('Token not found.');
+      throw new Error('Token not found.');
     }
 
     await this.tokenModel.deleteOne({ id: id }).exec();

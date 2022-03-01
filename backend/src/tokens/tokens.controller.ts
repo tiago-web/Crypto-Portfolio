@@ -36,6 +36,10 @@ export class TokensController {
     description: 'Invalid parameters',
     type: BadRequestSwagger,
   })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Token already exists',
+  })
   async create(@Body() createTokenDto: CreateTokenDto) {
     return await this.tokensService.create(createTokenDto);
   }
@@ -92,6 +96,6 @@ export class TokensController {
     type: NotFoundSwagger,
   })
   async delete(@Param('id') id: string) {
-    return await this.tokensService.deleteById(id);
+    await this.tokensService.deleteById(id);
   }
 }

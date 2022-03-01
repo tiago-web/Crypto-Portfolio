@@ -1,28 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateTokenDto } from './dto/create-token.dto';
 import { UpdateTokenQuantityDto } from './dto/update-token-quantity.dto';
-import { Token } from './entities/token.entity';
+import { mockNewToken, mockTokenList, mockUpdatedToken } from './mocks';
 import { TokensController } from './tokens.controller';
 import { TokensService } from './tokens.service';
-
-const mockNewToken = new Token({
-  id: 'ethereum',
-  name: 'Ethereum',
-  symbol: 'ETH',
-  quantity: 1,
-});
-
-const mockTokenList: Token[] = [
-  new Token({ id: 'ethereum', name: 'Ethereum', symbol: 'ETH', quantity: 1 }),
-  new Token({ id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC', quantity: 0.3 }),
-];
-
-const mockUpdatedToken = new Token({
-  id: 'ethereum',
-  name: 'Ethereum',
-  symbol: 'ETH',
-  quantity: 2,
-});
 
 describe('TokensController', () => {
   let tokensController: TokensController;
@@ -55,7 +36,6 @@ describe('TokensController', () => {
 
   describe('create', () => {
     it('should create a new token successfully', async () => {
-      // Arrange
       const body: CreateTokenDto = {
         id: 'ethereum',
         name: 'Ethereum',
@@ -63,17 +43,14 @@ describe('TokensController', () => {
         quantity: 1,
       };
 
-      // Act
-      const result = await tokensController.create(body);
+      const createdToken = await tokensController.create(body);
 
-      // Assert
-      expect(result).toEqual(mockNewToken);
+      expect(createdToken).toEqual(mockNewToken);
       expect(tokensService.create).toHaveBeenCalledTimes(1);
       expect(tokensService.create).toHaveBeenCalledWith(body);
     });
 
     it('should throw an exception', () => {
-      // Arrange
       const body: CreateTokenDto = {
         id: 'ethereum',
         name: 'Ethereum',
@@ -83,42 +60,37 @@ describe('TokensController', () => {
 
       jest.spyOn(tokensService, 'create').mockRejectedValueOnce(new Error());
 
-      // Assert
       expect(tokensController.create(body)).rejects.toThrowError();
     });
   });
 
   describe('index', () => {
     it('should return a list of the saved tokens successfully', async () => {
-      // Act
-      const result = await tokensController.index();
+      const tokenList = await tokensController.index();
 
-      // Assert
-      expect(result).toEqual(mockTokenList);
+      expect(tokenList).toEqual(mockTokenList);
       expect(tokensService.findAll).toHaveBeenCalledTimes(1);
     });
 
     it('should throw an exception', () => {
-      // Arrange
       jest.spyOn(tokensService, 'findAll').mockRejectedValueOnce(new Error());
 
-      // Assert
       expect(tokensController.index()).rejects.toThrowError();
     });
   });
 
   describe('updateQuantityById', () => {
     it('should update a token quantity by its id successfully', async () => {
-      // Arrange
       const body: UpdateTokenQuantityDto = {
         new_quantity: 2,
       };
 
-      // Act
-      const result = await tokensController.updateQuantity('ethereum', body);
+      const updatedToken = await tokensController.updateQuantity(
+        'ethereum',
+        body,
+      );
 
-      // Assert
-      expect(result).toEqual(mockUpdatedToken);
+      expect(updatedToken).toEqual(mockUpdatedToken);
       expect(tokensService.updateQuantityById).toHaveBeenCalledTimes(1);
       expect(tokensService.updateQuantityById).toHaveBeenCalledWith(
         'ethereum',
@@ -127,7 +99,6 @@ describe('TokensController', () => {
     });
 
     it('should throw an exception', () => {
-      // Arrange
       const body: UpdateTokenQuantityDto = {
         new_quantity: 2,
       };
@@ -136,7 +107,6 @@ describe('TokensController', () => {
         .spyOn(tokensService, 'updateQuantityById')
         .mockRejectedValueOnce(new Error());
 
-      // Assert
       expect(
         tokensController.updateQuantity('ethereum', body),
       ).rejects.toThrowError();
@@ -145,21 +115,17 @@ describe('TokensController', () => {
 
   describe('delete', () => {
     it('should remove a token successfully', async () => {
-      // Act
-      const result = await tokensController.delete('ethereum');
+      const deleteResult = await tokensController.delete('ethereum');
 
-      // Assert
-      expect(result).toBeUndefined();
+      expect(deleteResult).toBeUndefined();
       expect(tokensService.deleteById).toHaveBeenCalledTimes(1);
     });
 
     it('should throw an exception', () => {
-      // Arrange
       jest
         .spyOn(tokensService, 'deleteById')
         .mockRejectedValueOnce(new Error());
 
-      // Assert
       expect(tokensController.delete('ethereum')).rejects.toThrowError();
     });
   });
