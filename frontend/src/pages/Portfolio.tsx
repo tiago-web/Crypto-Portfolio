@@ -16,40 +16,22 @@ import {
   IconButton,
   Tooltip,
   TableFooter,
+  TextField,
+  Button,
 } from "@mui/material";
 
-interface TableData {
+import { useQuery } from "react-query";
+
+import Autocomplete from "../components/Autocomplete";
+import axios from "axios";
+
+export interface TokenProps {
   id: string;
   name: string;
+  symbol: string;
   quantity: number;
   amount: number;
 }
-
-function createData(
-  id: string,
-  name: string,
-  quantity: number,
-  amount: number
-): TableData {
-  return {
-    id,
-    name,
-    quantity,
-    amount,
-  };
-}
-
-const rows = [
-  createData("Bitcoin", "BTC", 25.0, 51),
-  createData("Ethereum", "ETH", 4, 70),
-  createData("Cardano", "ADA", 3.7, 67),
-  // createData("A", "A", 1, 1),
-  // createData("B", "B", 2, 2),
-  // createData("C", "C", 3, 3),
-  // createData("D", "D", 4, 4),
-  // createData("E", "E", 5, 5),
-  // createData("F", "F", 6, 6),
-];
 
 // function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 //   if (b[orderBy] < a[orderBy]) {
@@ -92,7 +74,7 @@ const rows = [
 // }
 
 interface TableColumns {
-  id: keyof TableData;
+  id: keyof TokenProps;
   label: string;
 }
 
@@ -119,7 +101,7 @@ interface EnhancedTableProps {
   numSelected: number;
   // onRequestSort: (
   //   event: React.MouseEvent<unknown>,
-  //   property: keyof TableData
+  //   property: keyof TokenProps
   // ) => void;
   // order: Order;
   // orderBy: string;
@@ -137,7 +119,7 @@ const EnhancedTableHead = (props: EnhancedTableProps) => {
     rowCount,
   } = props;
   // const createSortHandler =
-  //   (property: keyof TableData) => (event: React.MouseEvent<unknown>) => {
+  //   (property: keyof TokenProps) => (event: React.MouseEvent<unknown>) => {
   //     onRequestSort(event, property);
   //   };
 
@@ -186,35 +168,70 @@ const EnhancedTableHead = (props: EnhancedTableProps) => {
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
+  toolbarFooterComponent: React.ReactNode;
 }
 
-const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const { numSelected } = props;
-
+const EnhancedTableToolbar = ({
+  numSelected,
+  toolbarFooterComponent,
+}: EnhancedTableToolbarProps) => {
   return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-      }}
-    >
-      <Typography sx={{ flex: "1 1 100%" }} variant="h6" id="tableTitle">
-        Crypto App
-      </Typography>
-      {numSelected > 0 && (
-        <Tooltip title="Delete">
-          <IconButton>
-            <Typography variant="h6">Delete all tokens</Typography>
-          </IconButton>
-        </Tooltip>
+    <>
+      <Toolbar
+        sx={{
+          pl: { sm: 2 },
+          pr: { xs: 1, sm: 1 },
+        }}
+      >
+        <Typography sx={{ flex: "1 1 100%" }} variant="h6" id="tableTitle">
+          Crypto App
+        </Typography>
+        {numSelected > 0 && (
+          <Tooltip title="Delete">
+            <IconButton>
+              <Typography variant="h6">Delete all tokens</Typography>
+            </IconButton>
+          </Tooltip>
+        )}
+      </Toolbar>
+      {toolbarFooterComponent && (
+        <Box
+          sx={{
+            pl: { sm: 2 },
+            pr: { xs: 1, sm: 1 },
+          }}
+        >
+          {toolbarFooterComponent}
+        </Box>
       )}
-    </Toolbar>
+    </>
   );
 };
 
 const Portfolio = () => {
   // const [order, setOrder] = useState<Order>("asc");
-  // const [orderBy, setOrderBy] = useState<keyof TableData>("id");
+  // const [orderBy, setOrderBy] = useState<keyof TokenProps>("id");
+  const { data: availableTokens, isFetching } = useQuery<Partial<TokenProps[]>>(
+    "available-tokens",
+    async () => {
+      const response = await axios.get<TokenProps[]>(
+        "https://api.coingecko.com/api/v3/coins/list"
+      );
+
+      const uniqueTokenSymbols: TokenProps[] = [
+        ...new Map(
+          response.data.map((token: TokenProps) => [token.symbol, token])
+        ).values(),
+      ]; // remove duplicated tokens
+
+      return uniqueTokenSymbols.map((token: TokenProps) => ({
+        ...token,
+        label: token.name,
+      }));
+    }
+  );
+
+  const [tableData, setTableData] = useState<TokenProps[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
 
   // const handleRequestSort = useCallback(
@@ -229,7 +246,7 @@ const Portfolio = () => {
   const handleSelectAllClick = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.checked) {
-        const newSelecteds = rows.map((n) => n.id);
+        const newSelecteds = tableData.map((n) => n.id);
         setSelected(newSelecteds);
         return;
       }
@@ -252,30 +269,62 @@ const Portfolio = () => {
 
   const handleEditClick = useCallback(
     (id: string) => {
-      const foundTokenToEdit = rows.find((token) => token.id === id);
+      const foundTokenToEdit = tableData.find((token) => token.id === id);
 
       if (foundTokenToEdit) {
         alert(foundTokenToEdit.name);
       }
     },
-    [rows]
+    [tableData]
   );
 
   const handleRemoveClick = useCallback(
     (id: string) => {
-      const foundTokenToRemove = rows.find((token) => token.id === id);
+      const foundTokenToRemove = tableData.find((token) => token.id === id);
 
       if (foundTokenToRemove) {
         alert(foundTokenToRemove.name);
       }
     },
-    [rows]
+    [tableData]
   );
+
+  const handleAddClick = useCallback((id: string) => {
+    alert(id);
+  }, []);
 
   return (
     <Box sx={{ width: "100%", margin: "3rem 0" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          toolbarFooterComponent={
+            <Box
+              sx={{
+                margin: "1.5rem 0",
+                display: "flex",
+              }}
+            >
+              <Autocomplete
+                id="token-autocomplete"
+                options={availableTokens ?? []}
+              />
+              <TextField
+                sx={{ marginLeft: "1rem" }}
+                id="token-quantity"
+                label="Amount"
+                variant="outlined"
+                type="number"
+              />
+              <Button
+                sx={{ width: 120, marginLeft: "1rem" }}
+                variant="contained"
+              >
+                ADD
+              </Button>
+            </Box>
+          }
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -288,12 +337,12 @@ const Portfolio = () => {
               // orderBy={orderBy}
               // onRequestSort={handleRequestSort}
               onSelectAllClick={handleSelectAllClick}
-              rowCount={rows.length}
+              rowCount={tableData.length}
             />
             <TableBody>
-              {/* {stableSort(rows, getComparator(order, orderBy)) */}
+              {/* {stableSort(tableData, getComparator(order, orderBy)) */}
 
-              {rows.map((row) => {
+              {tableData.map((row) => {
                 const isItemSelected = selected.includes(row.id);
 
                 return (
@@ -312,7 +361,7 @@ const Portfolio = () => {
                         }}
                       />
                     </TableCell>
-                    <TableCell align="center">{row.id}</TableCell>
+                    <TableCell align="center">{row.symbol}</TableCell>
                     <TableCell align="center">{row.name}</TableCell>
                     <TableCell align="center">{row.quantity}</TableCell>
                     <TableCell align="center">$ {row.amount}</TableCell>
