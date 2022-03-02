@@ -8,6 +8,7 @@ import Table from "../components/Table";
 import Toolbar from "../components/Toolbar";
 import { api } from "../services";
 import LoadingScreen from "../components/LoadingScreen";
+import { useSnackbar } from "notistack";
 // import mockResponse from "../mockResponse.json";
 
 export interface TokenProps {
@@ -43,6 +44,8 @@ const columns: TableColumns[] = [
 ];
 
 const Portfolio = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const [tableData, setTableData] = useState<TokenProps[]>([]);
   const [selectedList, setSelectedList] = useState<string[]>([]);
 
@@ -124,6 +127,10 @@ const Portfolio = () => {
           foundTokenInList.amount = result.data.amount;
         }
 
+        enqueueSnackbar("Token successfully edited", {
+          variant: "success",
+        });
+
         setTableData(newTableData);
       } catch (err: any) {
         console.log(err.message);
@@ -136,6 +143,10 @@ const Portfolio = () => {
     try {
       await api.delete(`tokens/${id}`);
 
+      enqueueSnackbar("Token successfully removed", {
+        variant: "success",
+      });
+
       setTableData((prevState) => prevState.filter((token) => token.id !== id));
     } catch (err: any) {
       console.log(err.message);
@@ -145,6 +156,10 @@ const Portfolio = () => {
   const handleDeleteSelectedClick = useCallback(async () => {
     try {
       await api.delete("tokens", { data: { ids: selectedList } });
+
+      enqueueSnackbar("Tokens successfully removed", {
+        variant: "success",
+      });
 
       setTableData(
         (prevState) =>
@@ -164,13 +179,17 @@ const Portfolio = () => {
       (Object.keys(choosenTokenToAdd).length === 0 &&
         choosenTokenToAdd.constructor === Object)
     ) {
-      alert("The token must be choosen");
+      enqueueSnackbar("The token must be choosen", {
+        variant: "warning",
+      });
 
       return;
     }
 
     if (!inputedQuantity) {
-      alert("The quantity must be selected");
+      enqueueSnackbar("The quantity must be selected", {
+        variant: "warning",
+      });
 
       return;
     }
@@ -205,6 +224,10 @@ const Portfolio = () => {
 
         newTableData = [...tableData, result.data];
       }
+
+      enqueueSnackbar("Token successfully added", {
+        variant: "success",
+      });
 
       setTableData(newTableData);
       setChoosenTokenToAdd(null);

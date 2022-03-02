@@ -125,7 +125,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
             marginTop: "1rem",
           }}
           onClick={() => {
-            console.log("deleted all selected clicked");
             handleDeleteSelectedClick();
             setOpenDeleteAllSelectedTokenModal(false);
           }}
