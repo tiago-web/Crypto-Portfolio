@@ -219,7 +219,7 @@ const Table: React.FC<TableProps> = ({
         open={openEditTokenModal}
         handleClose={() => setOpenEditTokenModal(false)}
       >
-        <h2>{`Editing ${selectedTokenToEdit.symbol} - ${selectedTokenToEdit.name}`}</h2>
+        <h2>{`Editing: ${selectedTokenToEdit.name} - ${selectedTokenToEdit.symbol}`}</h2>
         <Box
           sx={{
             display: "flex",
@@ -246,6 +246,7 @@ const Table: React.FC<TableProps> = ({
             onClick={() => {
               handleEditClick(selectedTokenToEdit.id, newQuantity);
               setOpenEditTokenModal(false);
+              setNewQuantity(undefined);
             }}
           >
             Confirm
@@ -258,7 +259,7 @@ const Table: React.FC<TableProps> = ({
         open={openRemoveTokenModal}
         handleClose={() => setOpenRemoveTokenModal(false)}
       >
-        <h2>{`Removing ${selectedTokenToRemove.symbol} - ${selectedTokenToRemove.name}`}</h2>
+        <h2>{`Removing: ${selectedTokenToRemove.name} - ${selectedTokenToRemove.symbol}`}</h2>
         <p>{`Are you sure you want to remove of the crypto '${selectedTokenToRemove.name}' from your portfolio?`}</p>
 
         <Box

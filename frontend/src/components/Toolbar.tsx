@@ -105,7 +105,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
         </Box>
       </MUIToolbar>
 
-      {/* TODO: As the user if he is sure about what they are doing */}
       <Modal
         ariaLabel="delete-all-selected-token-modal"
         open={openDeleteAllSelectedTokenModal}

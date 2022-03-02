@@ -40,6 +40,7 @@ const Modal: React.FC<ModalProps> = ({
             textAlign: "center",
             display: "flex",
             padding: "2rem",
+            overflow: "auto",
           }}
         >
           <FaTimesCircle

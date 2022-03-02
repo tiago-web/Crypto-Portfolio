@@ -1,13 +1,14 @@
 import { useState, useCallback } from "react";
 
-import { Box, Paper } from "@mui/material";
+import { Box, Paper, CircularProgress } from "@mui/material";
 
 import { useQuery } from "react-query";
 
 import Table from "../components/Table";
 import Toolbar from "../components/Toolbar";
 import { api } from "../services";
-import mockResponse from "../mockResponse.json";
+import LoadingScreen from "../components/LoadingScreen";
+// import mockResponse from "../mockResponse.json";
 
 export interface TokenProps {
   id: string;
@@ -20,13 +21,6 @@ export interface TokenProps {
 interface TableColumns {
   id: keyof TokenProps;
   label: string;
-}
-
-interface MarketDataProps {
-  id: string;
-  symbol: string;
-  name: string;
-  current_price_usd: number;
 }
 
 const columns: TableColumns[] = [
@@ -59,22 +53,22 @@ const Portfolio = () => {
     undefined
   );
 
-  const { data: availableTokens, isFetching } = useQuery<
-    Omit<TokenProps, "quantity">[]
+  const { data: availableTokens, isFetching: isFetchingAvailableTokens } =
+    useQuery<Omit<TokenProps, "quantity">[]>(
+      "available-tokens",
+      async () => {
+        const response = await api.get<TokenProps[]>("tokens/available-tokens");
+
+        return response.data;
+      },
+      {
+        refetchOnWindowFocus: false,
+      }
+    );
+
+  const { isFetching: isFetchingPortfolioTokens } = useQuery<
+    Partial<TokenProps[]>
   >(
-    "available-tokens",
-    async () => {
-      // const response = await api.get<TokenProps[]>("tokens/available-tokens");
-
-      // return response.data;
-      return mockResponse as TokenProps[];
-    },
-    {
-      refetchOnWindowFocus: false,
-    }
-  );
-
-  const { isFetching: isLoading } = useQuery<Partial<TokenProps[]>>(
     "portfolio-tokens",
     async () => {
       const response = await api.get<TokenProps[]>("tokens");
@@ -85,6 +79,7 @@ const Portfolio = () => {
     },
     {
       refetchOnWindowFocus: false,
+      refetchInterval: 60 * 1000, // Refetch the data every minute to get the market update
     }
   );
 
@@ -218,6 +213,10 @@ const Portfolio = () => {
       console.log(err.message);
     }
   }, [inputedQuantity, choosenTokenToAdd, tableData]);
+
+  if (isFetchingAvailableTokens || isFetchingPortfolioTokens) {
+    return <LoadingScreen />;
+  }
 
   return (
     <Box sx={{ width: "100%", margin: "3rem 0" }}>
