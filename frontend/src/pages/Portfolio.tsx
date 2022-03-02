@@ -9,6 +9,7 @@ import Toolbar from "../components/Toolbar";
 import { api } from "../services";
 import LoadingScreen from "../components/LoadingScreen";
 import { useSnackbar } from "notistack";
+import { exponentialToDecimal } from "../utils/exponentialToDecimal";
 // import mockResponse from "../mockResponse.json";
 
 export interface TokenProps {
@@ -44,6 +45,8 @@ const columns: TableColumns[] = [
 ];
 
 const Portfolio = () => {
+  console.log(exponentialToDecimal(5.039999999999999e-10));
+
   const { enqueueSnackbar } = useSnackbar();
 
   const [tableData, setTableData] = useState<TokenProps[]>([]);

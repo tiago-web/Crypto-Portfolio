@@ -1,4 +1,6 @@
 export const exponentialToDecimal = (exponential: number) => {
+  const MAX_DECIMAL_CASES = 12;
+
   let decimal = exponential.toString().toLowerCase();
   if (decimal.includes("e+")) {
     const exponentialSplitted = decimal.split("e+");
@@ -32,10 +34,18 @@ export const exponentialToDecimal = (exponential: number) => {
   if (decimal.toLowerCase().includes("e-")) {
     const exponentialSplitted = decimal.split("e-");
     let prefix = "0.";
+
     for (let i = 0; i < +exponentialSplitted[1] - 1; i++) {
       prefix += "0";
     }
+
+    console.log(
+      prefix.length + exponentialSplitted[0].replace(".", "").length - 2
+    );
+
     decimal = prefix + exponentialSplitted[0].replace(".", "");
+
+    decimal = decimal.substring(0, MAX_DECIMAL_CASES + 2);
   }
   return decimal;
 };
