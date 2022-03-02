@@ -107,7 +107,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
   id,
   options,
   onChange,
-  defaultValue = "",
+  defaultValue = null,
 }) => {
   const [autocompleteValue, setAutocompleteValue] =
     React.useState(defaultValue);

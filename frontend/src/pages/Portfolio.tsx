@@ -52,9 +52,8 @@ const Portfolio = () => {
   const [tableData, setTableData] = useState<TokenProps[]>([]);
   const [selectedList, setSelectedList] = useState<string[]>([]);
 
-  const [choosenTokenToAdd, setChoosenTokenToAdd] = useState<
-    Partial<TokenProps>
-  >({} as Partial<TokenProps>);
+  const [choosenTokenToAdd, setChoosenTokenToAdd] =
+    useState<Partial<TokenProps | null>>(null);
 
   const [inputedQuantity, setInputedQuantity] = useState<number | undefined>(
     undefined
@@ -116,14 +115,21 @@ const Portfolio = () => {
   const handleEditClick = useCallback(
     async (id: string, newQuantity: number | undefined) => {
       try {
-        await api.patch(`tokens/update-quantity/${id}`, {
-          new_quantity: newQuantity,
-        });
+        let newTableData: TokenProps[] = [...tableData];
 
-        // TODO Update Quantity in table
-        // setTableData((prevState) =>
-        //   prevState.filter((token) => token.id !== id)
-        // );
+        const foundTokenInList = newTableData.find((token) => token.id === id);
+
+        // If the token was found in the portfolio the quantity will be edited
+        if (foundTokenInList && newQuantity) {
+          const result = await api.patch(`tokens/update-quantity/${id}`, {
+            new_quantity: newQuantity,
+          });
+
+          foundTokenInList.quantity = result.data.quantity;
+          foundTokenInList.amount = result.data.amount;
+        }
+
+        setTableData(newTableData);
       } catch (err: any) {
         console.log(err.message);
       }
@@ -142,25 +148,21 @@ const Portfolio = () => {
   }, []);
 
   const handleDeleteSelectedClick = useCallback(async () => {
-    console.log(selectedList);
+    try {
+      await api.delete("tokens", { data: { ids: selectedList } });
 
-    // try {
-    //   await api.delete(`tokens/${id}`);
-    //   setTableData((prevState) => prevState.filter((token) => token.id !== id));
-    // } catch (err: any) {
-    //   console.log(err.message);
-    // }
+      setTableData(
+        (prevState) =>
+          prevState.filter((token) => !selectedList.includes(token.id)) // Remove deleted tokens from table
+      );
+
+      setSelectedList([]);
+    } catch (err: any) {
+      console.log(err.message);
+    }
   }, [selectedList]);
 
   const handleAddClick = useCallback(async () => {
-    // const {
-    //   data: { current_price_usd },
-    // } = await api.get<MarketDataProps>(
-    //   `/tokens/market-data/${choosenTokenToAdd.id}`
-    // );
-
-    // amount: current_price_usd * inputedQuantity,
-
     // Checking if the token was selected
     if (
       !choosenTokenToAdd ||
@@ -189,8 +191,6 @@ const Portfolio = () => {
       if (foundTokenInList) {
         const newQuantity = foundTokenInList.quantity + inputedQuantity;
 
-        foundTokenInList.quantity = newQuantity;
-
         const result = await api.patch(
           `tokens/update-quantity/${choosenTokenToAdd?.id}`,
           {
@@ -198,7 +198,8 @@ const Portfolio = () => {
           }
         );
 
-        console.log("result for edit: ", result);
+        foundTokenInList.quantity = result.data.quantity;
+        foundTokenInList.amount = result.data.amount;
       } else {
         const result = await api.post(`/tokens`, {
           id: choosenTokenToAdd?.id,
@@ -207,13 +208,11 @@ const Portfolio = () => {
           quantity: inputedQuantity,
         });
 
-        console.log("result for add: ", result);
-
         newTableData = [...tableData, result.data];
       }
 
       setTableData(newTableData);
-      setChoosenTokenToAdd({} as Partial<TokenProps>);
+      setChoosenTokenToAdd(null);
       setInputedQuantity(undefined);
     } catch (err: any) {
       console.log(err.message);

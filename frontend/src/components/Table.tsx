@@ -17,6 +17,7 @@ import {
 import { useEffect, useState } from "react";
 
 import Modal from "./Modal";
+import { exponentialToDecimal } from "../utils/exponentialToDecimal";
 
 interface TableHeadProps {
   columns: any[];
@@ -108,12 +109,8 @@ const Table: React.FC<TableProps> = ({
 
   useEffect(() => {
     const total = tableData.reduce((accumulator, element) => {
-      console.log("element", element);
-
       return accumulator + element.amount;
     }, 0);
-
-    console.log("total", total);
 
     setTotalAmount(total);
   }, [tableData]);
@@ -157,7 +154,9 @@ const Table: React.FC<TableProps> = ({
                   <TableCell align="center">{row.symbol}</TableCell>
                   <TableCell align="center">{row.name}</TableCell>
                   <TableCell align="center">{row.quantity}</TableCell>
-                  <TableCell align="center">$ {row.amount ?? 0}</TableCell>
+                  <TableCell align="center">
+                    $ {exponentialToDecimal(row.amount) ?? 0}
+                  </TableCell>
                   <TableCell align="center">
                     <FaEdit
                       size={18}
@@ -207,7 +206,7 @@ const Table: React.FC<TableProps> = ({
                   style={{ fontWeight: "bold", color: "#000" }}
                   align="center"
                 >
-                  $ {totalAmount}
+                  $ {totalAmount.toFixed(2)}
                 </Typography>
               </TableCell>
             </TableRow>

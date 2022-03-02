@@ -49,7 +49,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         }}
       >
         <Typography sx={{ flex: "1 1 100%" }} variant="h6" id="tableTitle">
-          Crypto App
+          Crypto Portfolio App
         </Typography>
         {numSelected > 0 && (
           <Button
