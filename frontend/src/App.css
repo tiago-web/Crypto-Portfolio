@@ -1,4 +1,13 @@
 body {
-  background: #121214;
+  background-color: #fdfdfd !important;
   color: #e1e1f6;
+}
+
+/* Hide input arrows when its type is 'number' */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button,
+input[type="number"] {
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+  margin: 0;
 }

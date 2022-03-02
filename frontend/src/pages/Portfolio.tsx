@@ -1,84 +1,35 @@
 import { useState, useCallback } from "react";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
 
-import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Toolbar,
-  Typography,
-  Paper,
-  Checkbox,
-  IconButton,
-  Tooltip,
-  TableFooter,
-  TextField,
-  Button,
-} from "@mui/material";
+import { Box, Paper } from "@mui/material";
 
 import { useQuery } from "react-query";
 
-import Autocomplete from "../components/Autocomplete";
-import axios from "axios";
+import Table from "../components/Table";
+import Toolbar from "../components/Toolbar";
+import { api } from "../services";
+import mockResponse from "../mockResponse.json";
 
 export interface TokenProps {
   id: string;
   name: string;
   symbol: string;
   quantity: number;
-  amount: number;
+  amount?: number;
 }
-
-// function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-//   if (b[orderBy] < a[orderBy]) {
-//     return -1;
-//   }
-//   if (b[orderBy] > a[orderBy]) {
-//     return 1;
-//   }
-//   return 0;
-// }
-
-// type Order = "asc" | "desc";
-
-// function getComparator<Key extends keyof any>(
-//   order: Order,
-//   orderBy: Key
-// ): (
-//   a: { [key in Key]: number | string },
-//   b: { [key in Key]: number | string }
-// ) => number {
-//   return order === "desc"
-//     ? (a, b) => descendingComparator(a, b, orderBy)
-//     : (a, b) => -descendingComparator(a, b, orderBy);
-// }
-
-// // This method is created to support IE11
-// function stableSort<T>(
-//   array: readonly T[],
-//   comparator: (a: T, b: T) => number
-// ) {
-//   const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-//   stabilizedThis.sort((a, b) => {
-//     const order = comparator(a[0], b[0]);
-//     if (order !== 0) {
-//       return order;
-//     }
-//     return a[1] - b[1];
-//   });
-//   return stabilizedThis.map((el) => el[0]);
-// }
 
 interface TableColumns {
   id: keyof TokenProps;
   label: string;
 }
 
-const columns: readonly TableColumns[] = [
+interface MarketDataProps {
+  id: string;
+  symbol: string;
+  name: string;
+  current_price_usd: number;
+}
+
+const columns: TableColumns[] = [
   {
     id: "id",
     label: "Name",
@@ -97,166 +48,61 @@ const columns: readonly TableColumns[] = [
   },
 ];
 
-interface EnhancedTableProps {
-  numSelected: number;
-  // onRequestSort: (
-  //   event: React.MouseEvent<unknown>,
-  //   property: keyof TokenProps
-  // ) => void;
-  // order: Order;
-  // orderBy: string;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  rowCount: number;
-}
-
-const EnhancedTableHead = (props: EnhancedTableProps) => {
-  const {
-    onSelectAllClick,
-    // order,
-    // orderBy,
-    // onRequestSort,
-    numSelected,
-    rowCount,
-  } = props;
-  // const createSortHandler =
-  //   (property: keyof TokenProps) => (event: React.MouseEvent<unknown>) => {
-  //     onRequestSort(event, property);
-  //   };
-
-  return (
-    <TableHead style={{ borderBottom: "1px solid rgba(224, 224, 224, 1)" }}>
-      <TableRow>
-        <TableCell style={{ border: "none" }} padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              "aria-label": "select all tokens",
-            }}
-          />
-        </TableCell>
-        {columns.map((column) => (
-          <TableCell
-            style={{ border: "none" }}
-            key={column.id}
-            align="center"
-            padding="normal"
-            // sortDirection={orderBy === column.id ? order : false}
-          >
-            {column.label}
-
-            {/* <TableSortLabel
-              active={orderBy === column.id}
-              direction={orderBy === column.id ? order : "asc"}
-              onClick={createSortHandler(column.id)}
-            >
-              {column.label}
-              {orderBy === column.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </Box>
-              ) : null}
-            </TableSortLabel> */}
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-};
-
-interface EnhancedTableToolbarProps {
-  numSelected: number;
-  toolbarFooterComponent: React.ReactNode;
-}
-
-const EnhancedTableToolbar = ({
-  numSelected,
-  toolbarFooterComponent,
-}: EnhancedTableToolbarProps) => {
-  return (
-    <>
-      <Toolbar
-        sx={{
-          pl: { sm: 2 },
-          pr: { xs: 1, sm: 1 },
-        }}
-      >
-        <Typography sx={{ flex: "1 1 100%" }} variant="h6" id="tableTitle">
-          Crypto App
-        </Typography>
-        {numSelected > 0 && (
-          <Tooltip title="Delete">
-            <IconButton>
-              <Typography variant="h6">Delete all tokens</Typography>
-            </IconButton>
-          </Tooltip>
-        )}
-      </Toolbar>
-      {toolbarFooterComponent && (
-        <Box
-          sx={{
-            pl: { sm: 2 },
-            pr: { xs: 1, sm: 1 },
-          }}
-        >
-          {toolbarFooterComponent}
-        </Box>
-      )}
-    </>
-  );
-};
-
 const Portfolio = () => {
-  // const [order, setOrder] = useState<Order>("asc");
-  // const [orderBy, setOrderBy] = useState<keyof TokenProps>("id");
-  const { data: availableTokens, isFetching } = useQuery<Partial<TokenProps[]>>(
+  const [tableData, setTableData] = useState<TokenProps[]>([]);
+  const [selectedList, setSelectedList] = useState<string[]>([]);
+
+  const [choosenTokenToAdd, setChoosenTokenToAdd] = useState<
+    Partial<TokenProps>
+  >({} as Partial<TokenProps>);
+
+  const [inputedQuantity, setInputedQuantity] = useState<number | undefined>(
+    undefined
+  );
+
+  const { data: availableTokens, isFetching } = useQuery<
+    Omit<TokenProps, "quantity">[]
+  >(
     "available-tokens",
     async () => {
-      const response = await axios.get<TokenProps[]>(
-        "https://api.coingecko.com/api/v3/coins/list"
-      );
+      // const response = await api.get<TokenProps[]>("tokens/available-tokens");
 
-      const uniqueTokenSymbols: TokenProps[] = [
-        ...new Map(
-          response.data.map((token: TokenProps) => [token.symbol, token])
-        ).values(),
-      ]; // remove duplicated tokens
-
-      return uniqueTokenSymbols.map((token: TokenProps) => ({
-        ...token,
-        label: token.name,
-      }));
+      // return response.data;
+      return mockResponse as TokenProps[];
+    },
+    {
+      refetchOnWindowFocus: false,
     }
   );
 
-  const [tableData, setTableData] = useState<TokenProps[]>([]);
-  const [selected, setSelected] = useState<string[]>([]);
+  const { isFetching: isLoading } = useQuery<Partial<TokenProps[]>>(
+    "portfolio-tokens",
+    async () => {
+      const response = await api.get<TokenProps[]>("tokens");
 
-  // const handleRequestSort = useCallback(
-  //   (event: React.MouseEvent<unknown>, property: keyof TableData) => {
-  //     const isAsc = orderBy === property && order === "asc";
-  //     setOrder(isAsc ? "desc" : "asc");
-  //     setOrderBy(property);
-  //   },
-  //   [orderBy, order]
-  // );
+      setTableData(response.data);
+
+      return response.data;
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const handleSelectAllClick = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.checked) {
         const newSelecteds = tableData.map((n) => n.id);
-        setSelected(newSelecteds);
+        setSelectedList(newSelecteds);
         return;
       }
-      setSelected([]);
+      setSelectedList([]);
     },
-    []
+    [tableData]
   );
 
   const handleSelectClick = useCallback((id: string) => {
-    setSelected((prevState) => {
+    setSelectedList((prevState) => {
       const foundToken = prevState.find((tokenId) => tokenId === id);
 
       if (foundToken) {
@@ -268,140 +114,134 @@ const Portfolio = () => {
   }, []);
 
   const handleEditClick = useCallback(
-    (id: string) => {
-      const foundTokenToEdit = tableData.find((token) => token.id === id);
+    async (id: string, newQuantity: number | undefined) => {
+      try {
+        await api.patch(`tokens/update-quantity/${id}`, {
+          new_quantity: newQuantity,
+        });
 
-      if (foundTokenToEdit) {
-        alert(foundTokenToEdit.name);
+        // TODO Update Quantity in table
+        // setTableData((prevState) =>
+        //   prevState.filter((token) => token.id !== id)
+        // );
+      } catch (err: any) {
+        console.log(err.message);
       }
     },
     [tableData]
   );
 
-  const handleRemoveClick = useCallback(
-    (id: string) => {
-      const foundTokenToRemove = tableData.find((token) => token.id === id);
+  const handleRemoveClick = useCallback(async (id: string) => {
+    try {
+      await api.delete(`tokens/${id}`);
 
-      if (foundTokenToRemove) {
-        alert(foundTokenToRemove.name);
-      }
-    },
-    [tableData]
-  );
-
-  const handleAddClick = useCallback((id: string) => {
-    alert(id);
+      setTableData((prevState) => prevState.filter((token) => token.id !== id));
+    } catch (err: any) {
+      console.log(err.message);
+    }
   }, []);
+
+  const handleDeleteSelectedClick = useCallback(async () => {
+    console.log(selectedList);
+
+    // try {
+    //   await api.delete(`tokens/${id}`);
+    //   setTableData((prevState) => prevState.filter((token) => token.id !== id));
+    // } catch (err: any) {
+    //   console.log(err.message);
+    // }
+  }, [selectedList]);
+
+  const handleAddClick = useCallback(async () => {
+    // const {
+    //   data: { current_price_usd },
+    // } = await api.get<MarketDataProps>(
+    //   `/tokens/market-data/${choosenTokenToAdd.id}`
+    // );
+
+    // amount: current_price_usd * inputedQuantity,
+
+    // Checking if the token was selected
+    if (
+      !choosenTokenToAdd ||
+      (Object.keys(choosenTokenToAdd).length === 0 &&
+        choosenTokenToAdd.constructor === Object)
+    ) {
+      alert("The token must be choosen");
+
+      return;
+    }
+
+    if (!inputedQuantity) {
+      alert("The quantity must be selected");
+
+      return;
+    }
+
+    try {
+      let newTableData: TokenProps[] = [...tableData];
+
+      const foundTokenInList = newTableData.find(
+        (token) => token.id === choosenTokenToAdd?.id
+      );
+
+      // If the token was found in the portfolio the quantity will be edited
+      if (foundTokenInList) {
+        const newQuantity = foundTokenInList.quantity + inputedQuantity;
+
+        foundTokenInList.quantity = newQuantity;
+
+        const result = await api.patch(
+          `tokens/update-quantity/${choosenTokenToAdd?.id}`,
+          {
+            new_quantity: newQuantity,
+          }
+        );
+
+        console.log("result for edit: ", result);
+      } else {
+        const result = await api.post(`/tokens`, {
+          id: choosenTokenToAdd?.id,
+          symbol: choosenTokenToAdd?.symbol,
+          name: choosenTokenToAdd?.name,
+          quantity: inputedQuantity,
+        });
+
+        console.log("result for add: ", result);
+
+        newTableData = [...tableData, result.data];
+      }
+
+      setTableData(newTableData);
+      setChoosenTokenToAdd({} as Partial<TokenProps>);
+      setInputedQuantity(undefined);
+    } catch (err: any) {
+      console.log(err.message);
+    }
+  }, [inputedQuantity, choosenTokenToAdd, tableData]);
 
   return (
     <Box sx={{ width: "100%", margin: "3rem 0" }}>
-      <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar
-          numSelected={selected.length}
-          toolbarFooterComponent={
-            <Box
-              sx={{
-                margin: "1.5rem 0",
-                display: "flex",
-              }}
-            >
-              <Autocomplete
-                id="token-autocomplete"
-                options={availableTokens ?? []}
-              />
-              <TextField
-                sx={{ marginLeft: "1rem" }}
-                id="token-quantity"
-                label="Amount"
-                variant="outlined"
-                type="number"
-              />
-              <Button
-                sx={{ width: 120, marginLeft: "1rem" }}
-                variant="contained"
-              >
-                ADD
-              </Button>
-            </Box>
-          }
+      <Paper sx={{ width: "100%", mb: 2, overflowX: "auto" }}>
+        <Toolbar
+          numSelected={selectedList.length}
+          setChoosenTokenToAdd={setChoosenTokenToAdd}
+          choosenTokenToAdd={choosenTokenToAdd}
+          availableTokens={availableTokens ?? []}
+          inputedQuantity={inputedQuantity}
+          setInputedQuantity={setInputedQuantity}
+          handleAddClick={handleAddClick}
+          handleDeleteSelectedClick={handleDeleteSelectedClick}
         />
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby="crypto-portfolio"
-            size="medium"
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              // order={order}
-              // orderBy={orderBy}
-              // onRequestSort={handleRequestSort}
-              onSelectAllClick={handleSelectAllClick}
-              rowCount={tableData.length}
-            />
-            <TableBody>
-              {/* {stableSort(tableData, getComparator(order, orderBy)) */}
-
-              {tableData.map((row) => {
-                const isItemSelected = selected.includes(row.id);
-
-                return (
-                  <TableRow
-                    aria-checked={isItemSelected}
-                    key={row.id}
-                    selected={isItemSelected}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        color="primary"
-                        checked={isItemSelected}
-                        onChange={() => handleSelectClick(row.id)}
-                        inputProps={{
-                          "aria-labelledby": row.id,
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell align="center">{row.symbol}</TableCell>
-                    <TableCell align="center">{row.name}</TableCell>
-                    <TableCell align="center">{row.quantity}</TableCell>
-                    <TableCell align="center">$ {row.amount}</TableCell>
-                    <TableCell align="center">
-                      <FaEdit onClick={() => handleEditClick(row.id)} />
-                    </TableCell>
-                    <TableCell align="center">
-                      <FaTrashAlt onClick={() => handleRemoveClick(row.id)} />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-            <TableFooter
-              style={{ borderBottom: "1px solid rgba(224, 224, 224, 1)" }}
-            >
-              <TableRow>
-                <TableCell>
-                  <Typography
-                    style={{ fontWeight: "bold", color: "#000" }}
-                    align="center"
-                  >
-                    TOTAL:
-                  </Typography>
-                </TableCell>
-                <TableCell />
-                <TableCell />
-                <TableCell />
-                <TableCell>
-                  <Typography
-                    style={{ fontWeight: "bold", color: "#000" }}
-                    align="center"
-                  >
-                    $ 200
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
-        </TableContainer>
+        <Table
+          columns={columns}
+          tableData={tableData}
+          selectedList={selectedList}
+          handleSelectAllClick={handleSelectAllClick}
+          handleSelectClick={handleSelectClick}
+          handleEditClick={handleEditClick}
+          handleRemoveClick={handleRemoveClick}
+        />
       </Paper>
     </Box>
   );
