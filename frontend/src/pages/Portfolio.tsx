@@ -66,7 +66,7 @@ const Portfolio = () => {
       }
     );
 
-  const { isFetching: isFetchingPortfolioTokens } = useQuery<
+  const { isFetching: isFetchingPortfolioTokens, isRefetching } = useQuery<
     Partial<TokenProps[]>
   >(
     "portfolio-tokens",
@@ -214,7 +214,10 @@ const Portfolio = () => {
     }
   }, [inputedQuantity, choosenTokenToAdd, tableData]);
 
-  if (isFetchingAvailableTokens || isFetchingPortfolioTokens) {
+  if (
+    (isFetchingAvailableTokens || isFetchingPortfolioTokens) &&
+    !isRefetching
+  ) {
     return <LoadingScreen />;
   }
 
