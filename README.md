@@ -1,4 +1,3 @@
-
 <p align="center">
    <img src=".github/crypto-portfolio.PNG"/>
 </p>
@@ -9,32 +8,30 @@
 
 ---
 
-<p align="center"><img src=".github/gif1.mp4?raw=true"/></p>
+<p align="center"><img src=".github/gif1.gif?raw=true"/></p>
 <p align="center"><img src=".github/gif2.gif?raw=true"/></p>
 
 ---
 
 # :pushpin: Table of Contents
 
-* [Features](#link-features)
-* [Dependencies](#lock-dependencies)
-* [Getting Started](#checkered_flag-getting-started)
-* [Documentation](#page_with_curl-documentation)
-
+- [Features](#link-features)
+- [Dependencies](#lock-dependencies)
+- [Getting Started](#checkered_flag-getting-started)
+- [Documentation](#page_with_curl-documentation)
 
 # :link:Features
 
-* 📈 Retrieve the updated currency of the user's tokens.
-* 📋 Save and Remove tokens to the portfolio
-
+- 📈 Retrieve the updated currency of the user's tokens.
+- 📋 Save and Remove tokens to the portfolio
 
 # :lock: Dependencies
 
 **To run this script you need to install locally on your machine the following dependencies:**
 
-* [NodeJS](https://nodejs.org/en/download/)
-* [Docker](https://docs.docker.com/desktop/#download-and-install)
-* [Docker Compose](https://docs.docker.com/compose/install/)
+- [NodeJS](https://nodejs.org/en/download/)
+- [Docker](https://docs.docker.com/desktop/#download-and-install)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
 # :checkered_flag: Getting Started
 
@@ -57,7 +54,6 @@ Then:
 If the project runs successfully you should be able to access it on:
 
 `http://localhost:3000`
-
 
 # :page_with_curl: Documentation
 
