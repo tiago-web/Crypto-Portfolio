@@ -7,4 +7,4 @@ export default {
   component: LoadingScreen,
 } as ComponentMeta<typeof LoadingScreen>;
 
-export const NoDefaultValue = () => <LoadingScreen />;
+export const Default = () => <LoadingScreen />;

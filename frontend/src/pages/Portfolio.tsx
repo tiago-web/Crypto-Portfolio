@@ -1,16 +1,14 @@
 import { useState, useCallback } from "react";
 
-import { Box, Paper, CircularProgress } from "@mui/material";
+import { Box, Paper } from "@mui/material";
 
 import { useQuery } from "react-query";
 
-import Table from "../components/Table";
+import Table, { TableColumns } from "../components/Table";
 import Toolbar from "../components/Toolbar";
 import { api } from "../services";
 import LoadingScreen from "../components/LoadingScreen";
 import { useSnackbar } from "notistack";
-import { exponentialToDecimal } from "../utils/exponentialToDecimal";
-// import mockResponse from "../mockResponse.json";
 
 export interface TokenProps {
   id: string;
@@ -18,11 +16,6 @@ export interface TokenProps {
   symbol: string;
   quantity: number;
   amount?: number;
-}
-
-interface TableColumns {
-  id: keyof TokenProps;
-  label: string;
 }
 
 const columns: TableColumns[] = [
@@ -45,15 +38,13 @@ const columns: TableColumns[] = [
 ];
 
 const Portfolio = () => {
-  console.log(exponentialToDecimal(5.039999999999999e-10));
-
   const { enqueueSnackbar } = useSnackbar();
 
   const [tableData, setTableData] = useState<TokenProps[]>([]);
   const [selectedList, setSelectedList] = useState<string[]>([]);
 
   const [choosenTokenToAdd, setChoosenTokenToAdd] =
-    useState<Partial<TokenProps | null>>(null);
+    useState<Omit<TokenProps, "quantity"> | null>(null);
 
   const [inputedQuantity, setInputedQuantity] =
     useState<number | undefined>(undefined);
@@ -72,7 +63,7 @@ const Portfolio = () => {
     );
 
   const { isFetching: isFetchingPortfolioTokens, isRefetching } = useQuery<
-    Partial<TokenProps[]>
+    TokenProps[]
   >(
     "portfolio-tokens",
     async () => {
@@ -83,7 +74,6 @@ const Portfolio = () => {
       return response.data;
     },
     {
-      refetchOnWindowFocus: false,
       refetchInterval: 60 * 1000, // Refetch the data every minute to get the market update
     }
   );

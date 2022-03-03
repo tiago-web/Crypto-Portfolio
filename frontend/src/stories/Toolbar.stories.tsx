@@ -1,6 +1,7 @@
 import { ComponentMeta } from "@storybook/react";
 
 import Toolbar from "../components/Toolbar";
+import { TokenProps } from "../pages/Portfolio";
 
 export default {
   title: "Components/Toolbar",
@@ -19,12 +20,12 @@ export default {
   },
 } as ComponentMeta<typeof Toolbar>;
 
-const options = [
-  { name: "Bitcon", symbol: "BTC" },
-  { name: "Ethereum", symbol: "ETH" },
+const options: Omit<TokenProps, "quantity">[] = [
+  { id: "bitcoin", name: "Bitcon", symbol: "BTC" },
+  { id: "ethereum", name: "Ethereum", symbol: "ETH" },
 ];
 
-export const NoDefaultValue = () => (
+export const Default = () => (
   <Toolbar
     numSelected={0}
     setChoosenTokenToAdd={() => {}}
@@ -33,6 +34,19 @@ export const NoDefaultValue = () => (
     setInputedQuantity={() => {}}
     handleAddClick={() => {}}
     handleDeleteSelectedClick={() => {}}
-    choosenTokenToAdd={{ name: "Bitcon", symbol: "BTC" }}
+    choosenTokenToAdd={null}
+  />
+);
+
+export const SomeTokensSelected = () => (
+  <Toolbar
+    numSelected={2}
+    setChoosenTokenToAdd={() => {}}
+    availableTokens={options}
+    inputedQuantity={undefined}
+    setInputedQuantity={() => {}}
+    handleAddClick={() => {}}
+    handleDeleteSelectedClick={() => {}}
+    choosenTokenToAdd={null}
   />
 );

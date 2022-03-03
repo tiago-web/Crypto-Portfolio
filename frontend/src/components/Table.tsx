@@ -18,9 +18,15 @@ import { useEffect, useState } from "react";
 
 import Modal from "./Modal";
 import { exponentialToDecimal } from "../utils/exponentialToDecimal";
+import { TokenProps } from "../pages/Portfolio";
+
+export interface TableColumns {
+  id: keyof TokenProps;
+  label: string;
+}
 
 interface TableHeadProps {
-  columns: any[];
+  columns: TableColumns[];
   numSelected: number;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   rowCount: number;
@@ -62,9 +68,9 @@ const TableHead: React.FC<TableHeadProps> = ({
 };
 
 interface TableProps {
-  columns: any[];
-  tableData: any[];
-  selectedList: any[];
+  columns: TableColumns[];
+  tableData: TokenProps[];
+  selectedList: string[];
   handleSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleSelectClick: (rowId: string) => void;
   handleEditClick: (
@@ -85,20 +91,19 @@ const Table: React.FC<TableProps> = ({
 }) => {
   const [newQuantity, setNewQuantity] = useState<number | undefined>(undefined);
 
-  const [selectedTokenToEdit, setSelectedTokenToEdit] = useState<any>(
-    {} as any
+  const [selectedTokenToEdit, setSelectedTokenToEdit] = useState<TokenProps>(
+    {} as TokenProps
   );
   const [openEditTokenModal, setOpenEditTokenModal] = useState(false);
 
-  const [selectedTokenToRemove, setSelectedTokenToRemove] = useState<any>(
-    {} as any
-  );
+  const [selectedTokenToRemove, setSelectedTokenToRemove] =
+    useState<TokenProps>({} as TokenProps);
   const [openRemoveTokenModal, setOpenRemoveTokenModal] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
 
   useEffect(() => {
     const total = tableData.reduce((accumulator, element) => {
-      return accumulator + element.amount;
+      return accumulator + (element?.amount ?? 0);
     }, 0);
 
     setTotalAmount(total);
@@ -144,7 +149,7 @@ const Table: React.FC<TableProps> = ({
                   <TableCell align="center">{row.name}</TableCell>
                   <TableCell align="center">{row.quantity}</TableCell>
                   <TableCell align="center">
-                    $ {exponentialToDecimal(row.amount) ?? 0}
+                    $ {exponentialToDecimal(row?.amount ?? 0) ?? 0}
                   </TableCell>
                   <TableCell align="center">
                     <FaEdit

@@ -12,13 +12,13 @@ import Modal from "./Modal";
 
 interface ToolbarProps {
   numSelected: number;
-  setChoosenTokenToAdd: (token: Partial<TokenProps | null>) => void;
-  availableTokens: any[];
+  setChoosenTokenToAdd: (token: Omit<TokenProps, "quantity"> | null) => void;
+  availableTokens: Omit<TokenProps, "quantity">[];
   inputedQuantity: number | undefined;
   setInputedQuantity: (quantity: number | undefined) => void;
   handleAddClick: () => void;
   handleDeleteSelectedClick: () => void;
-  choosenTokenToAdd: Partial<TokenProps | null>;
+  choosenTokenToAdd: Omit<TokenProps, "quantity"> | null;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({

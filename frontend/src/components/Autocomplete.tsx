@@ -9,6 +9,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 
 import { VariableSizeList, ListChildComponentProps } from "react-window";
+import { TokenProps } from "../pages/Portfolio";
 
 const LISTBOX_PADDING = 8; // px
 
@@ -97,10 +98,10 @@ const ListboxComponent = React.forwardRef<
 });
 
 interface AutocompleteProps {
-  options: any[];
-  onChange(selectedItem: any): void;
+  options: Omit<TokenProps, "quantity">[];
+  onChange(selectedItem: Omit<TokenProps, "quantity"> | null): void;
   componentId?: string;
-  defaultValue?: any | null;
+  defaultValue?: Omit<TokenProps, "quantity"> | null;
 }
 
 const Autocomplete: React.FC<AutocompleteProps> = ({
