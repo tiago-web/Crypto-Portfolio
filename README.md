@@ -21,7 +21,7 @@
 - [Documentation](#page_with_curl-documentation)
 - [FAQ](#postbox-faq)
 
-# :link:Features
+# :link: Features
 
 - 📈 Retrieve the updated currency of the user's tokens.
 - 📋 Save and Remove tokens to the portfolio
