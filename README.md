@@ -57,10 +57,12 @@ If the project runs successfully you should be able to access it on:
 
 # :page_with_curl: Documentation
 
-To access the backend documentation:
+In a development environment, the frontend and backend docs are available on:
+
+**Backend**
 
 `http://localhost:3333/docs`
 
-To access the frontend documentation:
+**Frontend**
 
 `http://localhost:6006`
