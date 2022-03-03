@@ -1,14 +1,14 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 import { Box, Paper } from "@mui/material";
-
-import { useQuery } from "react-query";
 
 import Table, { TableColumns } from "../components/Table";
 import Toolbar from "../components/Toolbar";
 import { api } from "../services";
 import LoadingScreen from "../components/LoadingScreen";
 import { useSnackbar } from "notistack";
+import { useFetchAvailableTokens } from "../hooks/useFetchAvailableTokens";
+import { useFetchPortfolioTokens } from "../hooks/useFetchPortfolioTokens";
 
 export interface TokenProps {
   id: string;
@@ -49,34 +49,17 @@ const Portfolio = () => {
   const [inputedQuantity, setInputedQuantity] =
     useState<number | undefined>(undefined);
 
-  const { data: availableTokens, isFetching: isFetchingAvailableTokens } =
-    useQuery<Omit<TokenProps, "quantity">[]>(
-      "available-tokens",
-      async () => {
-        const response = await api.get<TokenProps[]>("tokens/available-tokens");
+  const { availableTokens, isFetchingAvailableTokens } =
+    useFetchAvailableTokens();
 
-        return response.data;
-      },
-      {
-        refetchOnWindowFocus: false,
-      }
-    );
+  const { portfolioTokens, isFetchingPortfolioTokens, isRefetching } =
+    useFetchPortfolioTokens();
 
-  const { isFetching: isFetchingPortfolioTokens, isRefetching } = useQuery<
-    TokenProps[]
-  >(
-    "portfolio-tokens",
-    async () => {
-      const response = await api.get<TokenProps[]>("tokens");
-
-      setTableData(response.data);
-
-      return response.data;
-    },
-    {
-      refetchInterval: 60 * 1000, // Refetch the data every minute to get the market update
+  useEffect(() => {
+    if (portfolioTokens) {
+      setTableData(portfolioTokens);
     }
-  );
+  }, [portfolioTokens]);
 
   const handleSelectAllClick = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -37,6 +37,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   return (
     <>
       <MUIToolbar
+        data-testid="toolbar"
         sx={{
           margin: "0 auto",
           display: "flex",

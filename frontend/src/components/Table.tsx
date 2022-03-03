@@ -111,7 +111,7 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <>
-      <TableContainer sx={{ overflowX: "unset" }}>
+      <TableContainer data-testid="table" sx={{ overflowX: "unset" }}>
         <MUITable
           sx={{ minWidth: 750, minHeight: 180 }}
           aria-labelledby="crypto-portfolio"

@@ -39,10 +39,6 @@ export const exponentialToDecimal = (exponential: number) => {
       prefix += "0";
     }
 
-    console.log(
-      prefix.length + exponentialSplitted[0].replace(".", "").length - 2
-    );
-
     decimal = prefix + exponentialSplitted[0].replace(".", "");
 
     decimal = decimal.substring(0, MAX_DECIMAL_CASES + 2);

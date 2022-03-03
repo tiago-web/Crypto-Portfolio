@@ -2,6 +2,7 @@ import { Box, CircularProgress } from "@mui/material";
 
 const LoadingScreen = () => (
   <Box
+    data-testid="loader"
     sx={{
       display: "flex",
       alignItems: "center",
