@@ -61,20 +61,6 @@ export class TokensController {
     return await this.tokensService.findAllAvailable();
   }
 
-  // @Get('market-data/:id')
-  // @ApiOperation({
-  //   summary: 'Return the market information for a specified token',
-  // })
-  // @ApiResponse({
-  //   status: HttpStatus.OK,
-  //   description: 'Token market data was successfully returned',
-  //   type: IndexTokenMarketDataSwagger,
-  //   isArray: true,
-  // })
-  // async indexTokenMarketData(@Param('id') id: string) {
-  //   return await this.tokensService.findMarketDataByIds([id]);
-  // }
-
   @Get('market-data')
   @ApiOperation({
     summary: 'Return the market information for the specified tokens',

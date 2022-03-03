@@ -1,11 +1,11 @@
 import { render } from "@testing-library/react";
-import Portfolio from "./Portfolio";
+import Portfolio from "../../pages/Portfolio";
 import { mocked } from "jest-mock";
-import { useFetchAvailableTokens } from "../hooks/useFetchAvailableTokens";
+import { useFetchAvailableTokens } from "../../hooks/useFetchAvailableTokens";
 
-jest.mock("../hooks/useFetchAvailableTokens");
+jest.mock("../../hooks/useFetchAvailableTokens");
 
-jest.mock("../hooks/useFetchPortfolioTokens", () => ({
+jest.mock("../../hooks/useFetchPortfolioTokens", () => ({
   useFetchPortfolioTokens: jest.fn().mockImplementation(() => ({
     portfolioTokens: undefined,
     isFetchingPortfolioTokens: false,
@@ -20,7 +20,7 @@ jest.mock("notistack", () => ({
 }));
 
 describe("Portfolio Component", () => {
-  it("should render the Toolbar and Table components", () => {
+  it("should render the Toolbar component", () => {
     const useFetchAvailableTokensMocked = mocked(useFetchAvailableTokens);
 
     useFetchAvailableTokensMocked.mockReturnValue({
@@ -33,7 +33,7 @@ describe("Portfolio Component", () => {
     expect(getByTestId("toolbar")).toBeInTheDocument();
   });
 
-  it("should render the Toolbar and Table components", () => {
+  it("should render the Table component", () => {
     const useFetchAvailableTokensMocked = mocked(useFetchAvailableTokens);
 
     useFetchAvailableTokensMocked.mockReturnValue({

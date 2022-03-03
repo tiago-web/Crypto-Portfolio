@@ -12,7 +12,7 @@ export default {
 } as ComponentMeta<typeof Autocomplete>;
 
 const options: Omit<TokenProps, "quantity">[] = [
-  { id: "bitcoin", name: "Bitcon", symbol: "BTC" },
+  { id: "bitcoin", name: "Bitcoin", symbol: "BTC" },
   { id: "ethereum", name: "Ethereum", symbol: "ETH" },
 ];
 
@@ -24,7 +24,7 @@ export const WithDefaultValue = () => (
   <Autocomplete
     onChange={() => {}}
     options={options}
-    defaultValue={{ id: "bitcoin", name: "Bitcon", symbol: "BTC" }}
+    defaultValue={{ id: "bitcoin", name: "Bitcoin", symbol: "BTC" }}
   />
 );
 

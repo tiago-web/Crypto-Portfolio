@@ -1,7 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateTokenDto } from './dto/create-token.dto';
+import { DeleteTokensDto } from './dto/delete-tokens.dto';
 import { UpdateTokenQuantityDto } from './dto/update-token-quantity.dto';
-import { mockNewToken, mockTokenList, mockUpdatedToken } from './mocks';
+import {
+  mockAvailableTokenList,
+  mockMarketDataTokenList,
+  mockNewToken,
+  mockTokenList,
+  mockUpdatedToken,
+} from './mocks';
+import { TokensMarketQueryParams } from './swagger/tokens-market-query.swagger';
 import { TokensController } from './tokens.controller';
 import { TokensService } from './tokens.service';
 
@@ -17,9 +25,14 @@ describe('TokensController', () => {
           provide: TokensService,
           useValue: {
             create: jest.fn().mockReturnValue(mockNewToken),
+            findAllAvailable: jest.fn().mockReturnValue(mockAvailableTokenList),
+            findMarketDataByIds: jest
+              .fn()
+              .mockReturnValue(mockMarketDataTokenList),
             findAll: jest.fn().mockReturnValue(mockTokenList),
             updateQuantityById: jest.fn().mockReturnValue(mockUpdatedToken),
             deleteById: jest.fn().mockReturnValue(undefined),
+            deleteManyByIds: jest.fn().mockReturnValue(undefined),
           },
         },
       ],
@@ -61,6 +74,50 @@ describe('TokensController', () => {
       jest.spyOn(tokensService, 'create').mockRejectedValueOnce(new Error());
 
       expect(tokensController.create(body)).rejects.toThrowError();
+    });
+  });
+
+  describe('indexAvailableToken', () => {
+    it('should return a list of the saved tokens successfully', async () => {
+      const tokenList = await tokensController.indexAvailableToken();
+
+      expect(tokenList).toEqual(mockAvailableTokenList);
+      expect(tokensService.findAllAvailable).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an exception', () => {
+      jest
+        .spyOn(tokensService, 'findAllAvailable')
+        .mockRejectedValueOnce(new Error());
+
+      expect(tokensController.indexAvailableToken()).rejects.toThrowError();
+    });
+  });
+
+  describe('indexTokensMarketData', () => {
+    it('should return a list of the saved tokens successfully', async () => {
+      const body: TokensMarketQueryParams = {
+        ids: 'bitcoin,ethereum',
+      };
+
+      const tokenList = await tokensController.indexTokensMarketData(body);
+
+      expect(tokenList).toEqual(mockMarketDataTokenList);
+      expect(tokensService.findMarketDataByIds).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an exception', () => {
+      const body: TokensMarketQueryParams = {
+        ids: 'bitcoin,ethereum',
+      };
+
+      jest
+        .spyOn(tokensService, 'findMarketDataByIds')
+        .mockRejectedValueOnce(new Error());
+
+      expect(
+        tokensController.indexTokensMarketData(body),
+      ).rejects.toThrowError();
     });
   });
 
@@ -127,6 +184,31 @@ describe('TokensController', () => {
         .mockRejectedValueOnce(new Error());
 
       expect(tokensController.delete('ethereum')).rejects.toThrowError();
+    });
+  });
+
+  describe('deleteMany', () => {
+    it('should remove multiple tokens successfully', async () => {
+      const body: DeleteTokensDto = {
+        ids: ['ethereum', 'bitcoin'],
+      };
+
+      const deleteResult = await tokensController.deleteMany(body);
+
+      expect(deleteResult).toBeUndefined();
+      expect(tokensService.deleteManyByIds).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an exception', () => {
+      const body: DeleteTokensDto = {
+        ids: ['ethereum', 'bitcoin'],
+      };
+
+      jest
+        .spyOn(tokensService, 'deleteManyByIds')
+        .mockRejectedValueOnce(new Error());
+
+      expect(tokensController.deleteMany(body)).rejects.toThrowError();
     });
   });
 });

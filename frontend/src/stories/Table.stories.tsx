@@ -38,7 +38,7 @@ const columns: TableColumns[] = [
 const tableData: TokenProps[] = [
   {
     id: "bitcoin",
-    name: "Bitcon",
+    name: "Bitcoin",
     symbol: "BTC",
     quantity: 0.3,
     amount: 12956,

@@ -4,7 +4,7 @@
 
 # Crypto Portfolio
 
-> This project aims to create a portfolio to store the tokens the user with the update amount in USD.
+> This project aims to create a portfolio that stores the tokens the user with the update amount in USD.
 
 ---
 
@@ -19,6 +19,7 @@
 - [Dependencies](#lock-dependencies)
 - [Getting Started](#checkered_flag-getting-started)
 - [Documentation](#page_with_curl-documentation)
+- [Testing](#bug-testing)
 - [FAQ](#postbox-faq)
 
 # :link: Features
@@ -75,6 +76,26 @@ Then:
 After these commands, you should be able to access the documentation on:
 
 `http://localhost:6006`
+
+# :bug: Testing
+
+In order to test the application, you should run the following command:
+
+**Backend**
+
+`cd backend`
+
+Then:
+
+`yarn test` or `npm run test`
+
+**Frontend**
+
+`cd frontend`
+
+Then:
+
+`yarn test` or `npm run test`
 
 # :postbox: FAQ
 

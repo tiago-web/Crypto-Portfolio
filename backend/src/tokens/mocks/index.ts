@@ -1,4 +1,6 @@
 import { Token } from '../entities/token.entity';
+import { IAvailableToken } from '../interfaces/available-token.interface';
+import { ITokenMarketData } from '../interfaces/token-market-data.interface';
 
 export const mockNewToken = new Token({
   id: 'ethereum',
@@ -6,6 +8,26 @@ export const mockNewToken = new Token({
   symbol: 'ETH',
   quantity: 1,
 });
+
+export const mockAvailableTokenList: IAvailableToken[] = [
+  { id: 'ethereum', name: 'Ethereum', symbol: 'ETH' },
+  { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC' },
+];
+
+export const mockMarketDataTokenList: ITokenMarketData[] = [
+  {
+    id: 'bitcoin',
+    symbol: 'BTC',
+    name: 'Bitcoin',
+    current_price: 42496,
+  },
+  {
+    id: 'ethereum',
+    symbol: 'ETH',
+    name: 'Ethereum',
+    current_price: 2827.96,
+  },
+];
 
 export const mockTokenList: Token[] = [
   new Token({ id: 'ethereum', name: 'Ethereum', symbol: 'ETH', quantity: 1 }),

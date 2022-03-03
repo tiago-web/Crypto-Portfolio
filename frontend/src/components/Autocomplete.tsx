@@ -119,6 +119,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
 
   return (
     <MUIAutocomplete
+      data-testid="auto-complete"
       id={componentId}
       sx={{ width: 300 }}
       value={autocompleteValue}

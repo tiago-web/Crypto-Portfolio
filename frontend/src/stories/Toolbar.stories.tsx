@@ -21,7 +21,7 @@ export default {
 } as ComponentMeta<typeof Toolbar>;
 
 const options: Omit<TokenProps, "quantity">[] = [
-  { id: "bitcoin", name: "Bitcon", symbol: "BTC" },
+  { id: "bitcoin", name: "Bitcoin", symbol: "BTC" },
   { id: "ethereum", name: "Ethereum", symbol: "ETH" },
 ];
 

@@ -15,6 +15,7 @@ const Modal: React.FC<ModalProps> = ({
   children,
 }) => (
   <MUIModal
+    data-testid="modal"
     open={open}
     onClose={handleClose}
     aria-labelledby={ariaLabel}
