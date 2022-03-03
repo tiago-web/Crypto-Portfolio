@@ -19,6 +19,7 @@
 - [Dependencies](#lock-dependencies)
 - [Getting Started](#checkered_flag-getting-started)
 - [Documentation](#page_with_curl-documentation)
+- [FAQ](#postbox-faq)
 
 # :link:Features
 
@@ -57,12 +58,34 @@ If the project runs successfully you should be able to access it on:
 
 # :page_with_curl: Documentation
 
-In a development environment, the frontend and backend docs are available on:
-
 **Backend**
+
+With your backend running, you should be able to access the documentation on:
 
 `http://localhost:3333/docs`
 
 **Frontend**
 
+`cd frontend`
+
+Then:
+
+`yarn storybook` or `npm run storybook`
+
+After these commands, you should be able to access the documentation on:
+
 `http://localhost:6006`
+
+# :postbox: FAQ
+
+**Question:** What are the technologies used in this project?
+
+**Answer:** The tecnologies used in this project are:
+
+- [React](https://reactjs.org/)
+- [Material UI](https://mui.com/pt/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [MongoDB](https://www.mongodb.com/)
+- [NestJS](https://nestjs.com/)
+- [Node.js](https://nodejs.org/en/download/)
+- [Docker](https://www.docker.com/)

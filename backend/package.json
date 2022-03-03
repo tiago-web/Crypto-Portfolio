@@ -22,7 +22,7 @@
     "docker:install": "docker-compose up -d dev mongodb mongo-express",
     "docker:build": "docker-compose up -d prod mongodb mongo-express",
     "docker:start": "docker logs --follow server-dev",
-    "startup": "npm run docker:install && cd ../frontend && npm install && npm run start && npm run storybook"
+    "startup": "npm run docker:install && cd ../frontend && npm install && npm run start"
   },
   "dependencies": {
     "@nestjs/axios": "^0.0.6",
