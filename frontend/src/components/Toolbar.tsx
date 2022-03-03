@@ -1,25 +1,24 @@
 import {
   Toolbar as MUIToolbar,
   Typography,
-  IconButton,
-  Tooltip,
   Button,
   TextField,
   Box,
 } from "@mui/material";
 import { useState } from "react";
+import { TokenProps } from "../pages/Portfolio";
 import Autocomplete from "./Autocomplete";
 import Modal from "./Modal";
 
 interface ToolbarProps {
   numSelected: number;
-  setChoosenTokenToAdd: any;
+  setChoosenTokenToAdd: (token: Partial<TokenProps | null>) => void;
   availableTokens: any[];
-  inputedQuantity: any;
-  setInputedQuantity: any;
-  handleAddClick: any;
-  handleDeleteSelectedClick: any;
-  choosenTokenToAdd: any;
+  inputedQuantity: number | undefined;
+  setInputedQuantity: (quantity: number | undefined) => void;
+  handleAddClick: () => void;
+  handleDeleteSelectedClick: () => void;
+  choosenTokenToAdd: Partial<TokenProps | null>;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
@@ -71,7 +70,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           }}
         >
           <Autocomplete
-            id="token-autocomplete"
+            componentId="token-autocomplete"
             defaultValue={choosenTokenToAdd}
             onChange={setChoosenTokenToAdd}
             options={availableTokens}

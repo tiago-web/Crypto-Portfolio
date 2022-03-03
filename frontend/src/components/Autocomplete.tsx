@@ -97,14 +97,14 @@ const ListboxComponent = React.forwardRef<
 });
 
 interface AutocompleteProps {
-  id: string;
   options: any[];
   onChange(selectedItem: any): void;
-  defaultValue?: any;
+  componentId?: string;
+  defaultValue?: any | null;
 }
 
 const Autocomplete: React.FC<AutocompleteProps> = ({
-  id,
+  componentId,
   options,
   onChange,
   defaultValue = null,
@@ -118,7 +118,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
 
   return (
     <MUIAutocomplete
-      id={id}
+      id={componentId}
       sx={{ width: 300 }}
       value={autocompleteValue}
       onChange={(e, value) => {

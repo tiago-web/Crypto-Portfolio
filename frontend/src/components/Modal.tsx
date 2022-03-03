@@ -3,9 +3,9 @@ import { Backdrop, Box, Fade, Modal as MUIModal, Paper } from "@mui/material";
 import { FaTimesCircle } from "react-icons/fa";
 
 interface ModalProps {
-  open: any;
-  handleClose: any;
-  ariaLabel: any;
+  open: boolean;
+  handleClose: () => void;
+  ariaLabel?: string;
 }
 
 const Modal: React.FC<ModalProps> = ({

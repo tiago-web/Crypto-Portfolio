@@ -55,9 +55,8 @@ const Portfolio = () => {
   const [choosenTokenToAdd, setChoosenTokenToAdd] =
     useState<Partial<TokenProps | null>>(null);
 
-  const [inputedQuantity, setInputedQuantity] = useState<number | undefined>(
-    undefined
-  );
+  const [inputedQuantity, setInputedQuantity] =
+    useState<number | undefined>(undefined);
 
   const { data: availableTokens, isFetching: isFetchingAvailableTokens } =
     useQuery<Omit<TokenProps, "quantity">[]>(

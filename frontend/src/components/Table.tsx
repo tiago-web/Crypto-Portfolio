@@ -52,22 +52,8 @@ const TableHead: React.FC<TableHeadProps> = ({
             key={column.id}
             align="center"
             padding="normal"
-            // sortDirection={orderBy === column.id ? order : false}
           >
             {column.label}
-
-            {/* <TableSortLabel
-                active={orderBy === column.id}
-                direction={orderBy === column.id ? order : "asc"}
-                onClick={createSortHandler(column.id)}
-              >
-                {column.label}
-                {orderBy === column.id ? (
-                  <Box component="span" sx={visuallyHidden}>
-                    {order === "desc" ? "sorted descending" : "sorted ascending"}
-                  </Box>
-                ) : null}
-              </TableSortLabel> */}
           </TableCell>
         ))}
       </TableRow>
@@ -78,11 +64,14 @@ const TableHead: React.FC<TableHeadProps> = ({
 interface TableProps {
   columns: any[];
   tableData: any[];
-  selectedList: any;
-  handleSelectAllClick: any;
-  handleSelectClick: any;
-  handleEditClick: any;
-  handleRemoveClick: any;
+  selectedList: any[];
+  handleSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSelectClick: (rowId: string) => void;
+  handleEditClick: (
+    selectedTokenId: string,
+    newQuantity: number | undefined
+  ) => void;
+  handleRemoveClick: (selectedTokenId: string) => void;
 }
 
 const Table: React.FC<TableProps> = ({
