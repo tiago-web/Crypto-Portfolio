@@ -1,15 +1,15 @@
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { of } from 'rxjs';
-import { CreateTokenDto } from './dto/create-token.dto';
-import { UpdateTokenQuantityDto } from './dto/update-token-quantity.dto';
-import { IAvailableToken } from './interfaces/available-token.interface';
-import {
-  mockFoundToken,
-  mockNewToken,
-  mockTokenList,
-  mockUpdatedToken,
-} from './mocks';
+// import { of } from 'rxjs';
+// import { CreateTokenDto } from './dto/create-token.dto';
+// import { UpdateTokenQuantityDto } from './dto/update-token-quantity.dto';
+// import { IAvailableToken } from './interfaces/available-token.interface';
+// import {
+//   mockFoundToken,
+//   mockNewToken,
+//   mockTokenList,
+//   mockUpdatedToken,
+// } from './mocks';
 import { TokensService } from './tokens.service';
 
 describe('TokensService', () => {

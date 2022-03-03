@@ -4,7 +4,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TokensModule } from './tokens/tokens.module';
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://localhost/nest'), TokensModule],
+  imports: [
+    MongooseModule.forRoot('mongodb://mongodb:27017/nest'),
+    TokensModule,
+  ],
   controllers: [],
   providers: [],
 })
