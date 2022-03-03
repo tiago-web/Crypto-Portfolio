@@ -1,6 +1,6 @@
 
 <p align="center">
-   <img src=".github/crypto-portfolio.png"/>
+   <img src=".github/crypto-portfolio.PNG"/>
 </p>
 
 # Crypto Portfolio
@@ -9,7 +9,7 @@
 
 ---
 
-<p align="center"><img src=".github/gif1.gif?raw=true"/></p>
+<p align="center"><img src=".github/gif1.mp4?raw=true"/></p>
 <p align="center"><img src=".github/gif2.gif?raw=true"/></p>
 
 ---
